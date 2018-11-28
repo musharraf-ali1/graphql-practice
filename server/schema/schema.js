@@ -10,15 +10,23 @@ const {
     GraphQLID,
     GraphQLInt,
     GraphQLList,
-    GraphQLNonNull
+    GraphQLNonNull,
+    GraphQLBoolean,
+    GraphQLInputObjectType
 } = graphql;
-
+// const SubscribedType=  new GraphQLInputObjectType({
+//     name:'Subscribed',
+//     fields: () =>({
+//         value: GraphQLBoolean, defaultValue: false
+//     })
+// }) 
 const BookType = new GraphQLObjectType({
     name: 'Book',
     fields: ( ) => ({
         id: { type: GraphQLID },
         name: { type: GraphQLString },
         genre: { type: GraphQLString },
+        subscribed : {type: GraphQLBoolean},
         author: {
             type: AuthorType,
             resolve(parent, args){
@@ -97,15 +105,62 @@ const Mutation = new GraphQLObjectType({
             args: {
                 name: { type: new GraphQLNonNull(GraphQLString) },
                 genre: { type: new GraphQLNonNull(GraphQLString) },
-                authorId: { type: new GraphQLNonNull(GraphQLID) }
+                authorId: { type: new GraphQLNonNull(GraphQLID) },
+                // HERE I CREATED A KEY WHICH IS BOOLEAN WHICH WILL DEFINE THE 
+                // STATE OF THE BOOK EITHER READ OR NOT.
+                // THIS IS GIVEN DEFAULT VALUE OF FALSE WHEN THE USER DID NOT
+                // SPECIFY THAT HE HAS READ THE BOOK OR NOT 
+                // AND POINT TO TAKE CARE OF IS THAT IT SHOULD ALSO BE DEFINED
+                // IN THE BOOK MODEL THAT WE WANT A KEY SUBSCRIBED ALSO.
+                subscribed: {type: GraphQLBoolean, defaultValue: false}
             },
             resolve(parent, args){
                 let book = new Book({
                     name: args.name,
                     genre: args.genre,
-                    authorId: args.authorId
+                    authorId: args.authorId,
+                    subscribed: args.subscribed
                 });
+                // console.log('subscribed value is ', book.subscribed)
                 return book.save();
+            }
+        },
+        markAsRead:{
+            type: BookType,
+            args:{
+                id: { type:new GraphQLNonNull(GraphQLID)}
+            },
+            resolve(parent,args){
+                // let book = Book.findById(args.id)
+                let bookSubscribed = Book.findByIdAndUpdate(args.id, { subscribed: true })
+                // console.log(bookSubscribed)
+
+                return bookSubscribed
+            }
+        },
+        markAsUnRead:{
+            type: BookType,
+            args:{
+                id: { type:new GraphQLNonNull(GraphQLID)}
+            },
+            resolve(parent,args){
+                // let book = Book.findById(args.id)
+                let bookUnSubscribed = Book.findByIdAndUpdate(args.id, { subscribed: false })
+                // console.log(bookUnSubscribed)
+
+                return bookUnSubscribed
+            }
+        },
+        delBook: {
+            type: BookType,
+            args: {
+                name: { type: new GraphQLNonNull(GraphQLString) },
+                // genre: { type: new GraphQLNonNull(GraphQLString) },
+                // authorId: { type: new GraphQLNonNull(GraphQLID) }
+            },
+            resolve(parent, args){
+               let book = Book.deleteOne({ name: args.name });
+               return book
             }
         }
     }

@@ -14,6 +14,7 @@ const getBooksQuery = gql`
         books {
             name
             id
+            subscribed
         }
     }
 `;
@@ -33,6 +34,7 @@ const getBookQuery = gql`
             id
             name
             genre
+            subscribed
             author {
                 id
                 name
@@ -45,5 +47,18 @@ const getBookQuery = gql`
         }
     }
 `;
-
-export { getAuthorsQuery, getBooksQuery, addBookMutation, getBookQuery };
+const markTheBookAsRead = gql`
+    mutation MarkAsRead($bookId: ID!){
+        markAsRead(id: $bookId){
+            name
+        }
+    }
+`;
+const markTheBookAsUnRead = gql`
+    mutation MarkAsUnRead($bookId: ID!){
+        markAsUnRead(id: $bookId){
+            name
+        }
+    }
+`;
+export { getAuthorsQuery, getBooksQuery, addBookMutation, getBookQuery ,markTheBookAsRead,markTheBookAsUnRead };

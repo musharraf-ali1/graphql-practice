@@ -44,6 +44,8 @@ typings/
 
 # Optional eslint cache
 .eslintcache
+.eslintrc
+.eslintignore
 
 # Optional REPL history
 .node_repl_history
@@ -57,3 +59,8 @@ typings/
 # dotenv environment variables file
 .env
 
+# all lock files will be omitted
+*.lock
+
+# all config files will be omitted
+/server/config/index.js

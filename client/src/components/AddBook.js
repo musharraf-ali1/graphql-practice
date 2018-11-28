@@ -22,7 +22,7 @@ class AddBook extends Component {
         }
     }
     submitForm(e){
-        e.preventDefault()
+        // e.preventDefault()
         // use the addBookMutation
         this.props.addBookMutation({
             variables: {

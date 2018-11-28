@@ -11,10 +11,11 @@ class BookDetails extends Component {
                     <h2>{ book.name }</h2>
                     <p>{ book.genre }</p>
                     <p>{ book.author.name }</p>
+                    { book.subscribed ? <p>status: this book has read by the user </p>: <p>status: this book has not yet read by the user </p>} 
                     <p>All books by this author:</p>
                     <ul className="other-books">
                         { book.author.books.map(item => {
-                            return <li key={item.id}>{ item.name }</li>
+                            return <li key={item.id}>{ item.name }</li>;
                         })}
                     </ul>
                 </div>
@@ -38,6 +39,6 @@ export default graphql(getBookQuery, {
             variables: {
                 id: props.bookId
             }
-        }
+        };
     }
 })(BookDetails);
