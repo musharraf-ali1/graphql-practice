@@ -5,7 +5,7 @@ import { gql } from 'apollo-boost';
 import {
   getBooksQuery,
   markTheBookAsRead,
-  markTheBookAsUnRead,
+  markTheBookAsUnRead
   // getBookQuery
 } from '../queries/queries';
 // import PropTypes from 'prop-types';
@@ -13,7 +13,7 @@ import {
 // components
 import BookDetails from './BookDetails';
 import SingleBook from './SingleBook';
-import { get } from 'https';
+// import { get } from 'https';
 // import { propType } from 'graphql-anywhere';
 // import Switch from './Switch';
 
@@ -24,15 +24,14 @@ class BookList extends Component {
       selected: null
     };
   }
-  
-  selectedBook=(id)=>{
+
+  selectedBook = id => {
     this.setState({ selected: id });
-  }
+  };
   // static propTypes = {
   //   getBooksQuery: PropTypes.func
   // };
 
-  
   displayBooks(data1, client) {
     var data = this.props.getBooksQuery;
     if (data.loading) {
@@ -41,7 +40,11 @@ class BookList extends Component {
       // console.log(this.props.getBooksQuery.nothing);
       return data.books.map(book => {
         return (
-          <SingleBook key={book.id} book={book} selectedBook={this.selectedBook}/>
+          <SingleBook
+            key={book.id}
+            book={book}
+            selectedBook={this.selectedBook}
+          />
         );
       });
     }
