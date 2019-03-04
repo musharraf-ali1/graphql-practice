@@ -1,7 +1,10 @@
 const graphql = require("graphql");
 const Book = require("../models/book");
+const User = require("../models/user");
 const Author = require("../models/author");
-const _ = require("lodash");
+const jsonwebtoken = require("jsonwebtoken");
+
+// const _ = require("lodash");
 
 const {
   GraphQLObjectType,
@@ -50,6 +53,33 @@ const AuthorType = new GraphQLObjectType({
     }
   })
 });
+const UserType = new GraphQLObjectType({
+  name: "User",
+  fields: () => ({
+    id: { type: GraphQLID },
+    age: { type: GraphQLInt },
+    firstName: { type: GraphQLString },
+    lastName: { type: GraphQLString },
+    dob: { type: GraphQLString },
+    username: { type: GraphQLString },
+    email: { type: GraphQLString }
+    // password: { type: GraphQLString }
+  })
+});
+
+// const LoggingUserType = new GraphQLObjectType({
+//   name: "LoggingUser",
+//   fields: () => ({
+//     id: { type: GraphQLID },
+//     age: { type: GraphQLInt },
+//     firstName: { type: GraphQLString },
+//     lastName: { type: GraphQLString },
+//     dob: { type: GraphQLString },
+//     username: { type: GraphQLString },
+//     email: { type: GraphQLString },
+//     // password: { type: GraphQLString }
+//   })
+// });
 
 const RootQuery = new GraphQLObjectType({
   name: "RootQueryType",
@@ -132,9 +162,13 @@ const Mutation = new GraphQLObjectType({
       },
       resolve(parent, args) {
         // let book = Book.findById(args.id)
-        let bookSubscribed = Book.findByIdAndUpdate(args.id, {
-          subscribed: true
-        });
+        let bookSubscribed = Book.findByIdAndUpdate(
+          args.id,
+          {
+            subscribed: true
+          },
+          { new: true }
+        );
         // console.log(bookSubscribed)
 
         return bookSubscribed;
@@ -147,9 +181,13 @@ const Mutation = new GraphQLObjectType({
       },
       resolve(parent, args) {
         // let book = Book.findById(args.id)
-        let bookUnSubscribed = Book.findByIdAndUpdate(args.id, {
-          subscribed: false
-        });
+        let bookUnSubscribed = Book.findByIdAndUpdate(
+          args.id,
+          {
+            subscribed: false
+          },
+          { new: true }
+        );
         // console.log(bookUnSubscribed)
 
         return bookUnSubscribed;
@@ -165,6 +203,60 @@ const Mutation = new GraphQLObjectType({
       resolve(parent, args) {
         let book = Book.deleteOne({ name: args.name });
         return book;
+      }
+    },
+    // THIS IS WHERE USER IS ADDED IN THE DATA BASE
+    addUser: {
+      type: UserType,
+      args: {
+        firstName: { type: new GraphQLNonNull(GraphQLString) },
+        lastName: { type: new GraphQLNonNull(GraphQLString) },
+        age: { type: new GraphQLNonNull(GraphQLInt) },
+        dob: { type: new GraphQLNonNull(GraphQLString) },
+        username: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        password: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      resolve(parent, args) {
+        let hashedPassword = args.password + "12345";
+        let user = new User({
+          firstName: args.firstName,
+          lastName: args.lastName,
+          age: args.age,
+          dob: args.dob,
+          username: args.username,
+          email: args.email,
+          password: hashedPassword
+        });
+        // console.log('subscribed value is ', book.subscribed)
+        return user.save();
+      }
+    },
+    loginUser: {
+      type: UserType,
+      args: {
+        id: { type: GraphQLID },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        password: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      async resolve(parent, args, { res }) {
+        // user ? console.log("this is user", user) : console.log("nothing");
+        // let token;
+        let user = await User.findOne({ email: args.email });
+        if (user.password === args.password + "12345") {
+          let token = jsonwebtoken.sign(
+            {
+              id: args.id,
+              email: args.email
+            },
+            "somesuperdupersecret",
+            { expiresIn: "1y" }
+          );
+          console.log("this is token ", token);
+          res.send(token);
+        } else {
+          return user;
+        }
       }
     }
   }

@@ -3,7 +3,7 @@ import { graphql, compose } from 'react-apollo';
 import {
   getAuthorsQuery,
   addBookMutation,
-  getBooksQuery
+  // getBooksQuery
 } from '../queries/queries';
 
 class AddBook extends Component {
@@ -38,7 +38,7 @@ class AddBook extends Component {
         genre: this.state.genre,
         authorId: this.state.authorId
       },
-      refetchQueries: [{ query: getBooksQuery }]
+      // refetchQueries: [{ query: getBooksQuery }]
     });
   }
   render() {

@@ -3,9 +3,9 @@ import { graphql, compose, Query } from 'react-apollo';
 import { gql } from 'apollo-boost';
 
 import {
-  getBooksQuery,
-  markTheBookAsRead,
-  markTheBookAsUnRead
+  getBooksQuery
+  // markTheBookAsRead,
+  //  markTheBookAsUnRead
   // getBookQuery
 } from '../queries/queries';
 // import PropTypes from 'prop-types';
@@ -50,7 +50,8 @@ class BookList extends Component {
     }
   }
   render() {
-    console.log('this is rendering again or not see for it ');
+    // const { me, what, ...butter } = this.props;
+    // console.log('this is rendering again or not see for it ', me, what, butter);
     return (
       <Query query={GET_VISIBILITY_FILTER}>
         {({ data, client }) => (
@@ -77,8 +78,8 @@ const GET_VISIBILITY_FILTER = gql`
 
 export default compose(
   graphql(getBooksQuery, { name: 'getBooksQuery' }),
-  graphql(markTheBookAsRead, { name: 'markTheBookAsRead' }),
-  graphql(markTheBookAsUnRead, { name: 'markTheBookAsUnRead' }),
+  // graphql(markTheBookAsRead, { name: 'markTheBookAsRead' }),
+  // graphql(markTheBookAsUnRead, { name: 'markTheBookAsUnRead' }),
   // graphql(getBookQuery, { name: 'getBookQuery' }),
   graphql(GET_VISIBILITY_FILTER)
 )(BookList);

@@ -2,10 +2,10 @@ import React, { Fragment } from 'react';
 import { graphql, compose } from 'react-apollo';
 
 import {
-  getBooksQuery,
+  // getBooksQuery,
   markTheBookAsRead,
-  markTheBookAsUnRead
-  // getBookQuery
+  markTheBookAsUnRead,
+  // getSubscribedBookQuery
 } from '../queries/queries';
 
 class SingleBook extends React.Component {
@@ -14,7 +14,15 @@ class SingleBook extends React.Component {
       variables: {
         bookId: id
       },
-      refetchQueries: [{ query: getBooksQuery }]
+      optimisticResponse: {
+        __typename: 'Mutation',
+        markAsRead: {
+          id,
+          __typename: 'Book',
+          subscribed: true
+        }
+      },
+      // refetchQueries: [{ query: getSubscribedBookQuery, variables: { id } }]
     });
     // .then(()=>client
     // this.props.getBooksQuery.refetch()
@@ -25,19 +33,27 @@ class SingleBook extends React.Component {
       variables: {
         bookId: id
       },
-      refetchQueries: [{ query: getBooksQuery }]
+      optimisticResponse: {
+        __typename: 'Mutation',
+        markAsUnRead: {
+          id,
+          __typename: 'Book',
+          subscribed: false
+        }
+      },
+      // refetchQueries: [{ query: getSubscribedBookQuery, variables: { id } }]
     });
     // .then(()=>
     // this.props.getBooksQuery.refetch()
     // );
   }
-  shouldComponentUpdate(a) {
-    if (a.book.subscribed === this.props.book.subscribed) return false;
+  shouldComponentUpdate(nextProps) {
+    if (nextProps.book.subscribed === this.props.book.subscribed) return false;
     return true;
   }
   render() {
-    console.log('this is rendering how many times ');
     const { book, selectedBook } = this.props;
+    console.log('this is rendering how many times ', book);
     return (
       <Fragment>
         <li>
@@ -63,7 +79,8 @@ class SingleBook extends React.Component {
   }
 }
 export default compose(
-  graphql(getBooksQuery, { name: 'getBooksQuery' }),
+  // graphql(getBooksQuery, { name: 'getBooksQuery' }),
+  // graphql(getSubscribedBookQuery, { name: 'getSubscribedBookQuery' }),
   graphql(markTheBookAsRead, { name: 'markTheBookAsRead' }),
   graphql(markTheBookAsUnRead, { name: 'markTheBookAsUnRead' })
   // graphql(getBookQuery, { name: 'getBookQuery' }),

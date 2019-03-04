@@ -1,64 +1,83 @@
 import { gql } from 'apollo-boost';
 
 const getAuthorsQuery = gql`
-    {
-        authors {
-            name
-            id
-        }
+  {
+    authors {
+      name
+      id
     }
+  }
 `;
 
 const getBooksQuery = gql`
-    {
-        books {
-            name
-            id
-            subscribed
-        }
+  {
+    books {
+      name
+      id
+      subscribed
     }
+  }
 `;
 
 const addBookMutation = gql`
-    mutation AddBook($name: String!, $genre: String!, $authorId: ID!){
-        addBook(name: $name, genre: $genre, authorId: $authorId){
-            name
-            id
-        }
+  mutation AddBook($name: String!, $genre: String!, $authorId: ID!) {
+    addBook(name: $name, genre: $genre, authorId: $authorId) {
+      name
+      id
     }
+  }
 `;
 
 const getBookQuery = gql`
-    query GetBook($id: ID){
-        book(id: $id) {
-            id
-            name
-            genre
-            subscribed
-            author {
-                id
-                name
-                age
-                books {
-                    name
-                    id
-                }
-            }
+  query GetBook($id: ID) {
+    book(id: $id) {
+      id
+      name
+      genre
+      subscribed
+      author {
+        id
+        name
+        age
+        books {
+          name
+          id
         }
+      }
     }
+  }
 `;
-const markTheBookAsRead = gql`
-    mutation MarkAsRead($bookId: ID!){
-        markAsRead(id: $bookId){
-            name
-        }
+const getSubscribedBookQuery = gql`
+  query getSubscribedBook($id: ID) {
+    book(id: $id) {
+      id
+      subscribed
     }
+  }
+`;
+
+const markTheBookAsRead = gql`
+  mutation MarkAsRead($bookId: ID!) {
+    markAsRead(id: $bookId) {
+      id,
+      subscribed
+    }
+  }
 `;
 const markTheBookAsUnRead = gql`
-    mutation MarkAsUnRead($bookId: ID!){
-        markAsUnRead(id: $bookId){
-            name
-        }
+  mutation MarkAsUnRead($bookId: ID!) {
+    markAsUnRead(id: $bookId) {
+      id,
+      subscribed
     }
+  }
 `;
-export { getAuthorsQuery, getBooksQuery, addBookMutation, getBookQuery ,markTheBookAsRead,markTheBookAsUnRead };
+export {
+  getAuthorsQuery,
+  getBooksQuery,
+  addBookMutation,
+  getBookQuery,
+  markTheBookAsRead,
+  markTheBookAsUnRead,
+  getSubscribedBookQuery
+};
